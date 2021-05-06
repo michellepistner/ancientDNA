@@ -95,18 +95,6 @@ metadata_prep = metadata_london %>%
 
 
 #####Part 2: Selecting the Best Model for Time#####
-var.explained.CLR <- function(posterior){
-  Y.pred = predict(posterior, response = "LambdaX", from_scratch = TRUE)
-  exp.mat = matrix(NA, nrow = dim(Y.pred)[3], ncol = dim(Y.pred)[1])
-  for(i in 1:dim(Y.pred)[3]){
-    var_fit = apply(Y.pred[,,i], MARGIN = 1, FUN = "var")
-    var_res = diag(posterior$Sigma[,,i]) ##apply(Y.pred[,,i] - avg.Ypred, MARGIN = 1, FUN = "var")
-    exp.mat[i,] = var_fit/ (var_fit + var_res)
-   
-  }
-  return(exp.mat)
-}#end of function
-
 var.explained.Y <- function(posterior, otu.closed){
   posterior = to_proportions(posterior)
   posterior = to_alr(posterior, ncategories(posterior))
@@ -161,13 +149,6 @@ ppc_summary(posterior)
 ppc(posterior, from_scratch=TRUE) 
 ppc_summary(posterior, from_scratch=TRUE)
 
-var.exp = var.explained.CLR(posterior)
-
-###Percentage of variance explained
-
-print("Percent of Variation Explained by Intercept-Only Model (CLR coordinates):")
-mean(var.exp)
-
 var.exp.Y = var.explained.Y(posterior,otu.closed)
 
 ###Percentage of variance explained
@@ -191,11 +172,6 @@ ppc_summary(posterior)
 ppc(posterior, from_scratch=TRUE)
 ppc_summary(posterior, from_scratch=TRUE)
 
-var.exp = var.explained.CLR(posterior)
-###Percentage of variance explained
-
-print("Percent of Variation Explained by Date Model (CLR Coordinates):")
-mean(var.exp)
 
 var.exp.Y = var.explained.Y(posterior,otu.closed)
 
@@ -213,12 +189,6 @@ Gamma = diag(nrow(X))*gamm.select
 
 posterior = pibble(Y, X, upsilon, Theta, Gamma, Xi, multDirichletBoot = 1)
 posterior = to_clr(posterior)
-
-
-var.exp = var.explained.CLR(posterior)
-###Percentage of variance explained
-print("Percent of Variation Explained by Cemetry Model (CLR Coordinates):")
-mean(var.exp)
 
 var.exp.Y = var.explained.Y(posterior,otu.closed)
 
@@ -272,12 +242,6 @@ ppc(posterior, from_scratch=TRUE)
 ppc_summary(posterior, from_scratch=TRUE)
 
 
-var.exp = var.explained.CLR(posterior)
-###Percentage of variance explained
-
-print("Percent of Variation Explained by Date_100 Model (CLR Coordinates):")
-mean(var.exp)
-
 var.exp = var.explained.Y(posterior, otu.closed)
 ###Percentage of variance explained
 
@@ -309,12 +273,6 @@ Gamma = diag(nrow(X))*gamm.select
 posterior <- pibble(Y.samp, X, upsilon, Theta, Gamma, Xi)
 posterior = to_clr(posterior)
 
-var.exp.int = var.explained.CLR(posterior)
-###Percentage of variance explained
-
-print("Percent of Variation in Time Explained by Intercept-Only Model (CLR Coordinates):")
-
-mean(var.exp.int)
 
 var.exp.int = var.explained.Y(posterior, otu.closed.Ysamp)
 ###Percentage of variance explained
@@ -332,11 +290,6 @@ Gamma = diag(nrow(X))*gamm.select
 posterior <- pibble(Y.samp, X, upsilon, Theta, Gamma, Xi)
 posterior = to_clr(posterior)
 
-var.exp.date = var.explained.CLR(posterior)
-###Percentage of variance explained
-
-print("Percent of Variation in Time Explained by Date_100 Model (CLR Coordinates):")
-mean(var.exp.date)
 
 var.exp.date = var.explained.Y(posterior, otu.closed.Ysamp)
 ###Percentage of variance explained
@@ -351,12 +304,6 @@ Gamma = diag(nrow(X))*gamm.select
 
 posterior <- pibble(Y.samp, X, upsilon, Theta, Gamma, Xi, multDirichletBoot = 1)
 posterior = to_clr(posterior)
-
-var.exp.cem = var.explained.CLR(posterior)
-###Percentage of variance explained
-
-print("Percent of Variation in Time Explained by Cemetry Model (CLR Coordinates):")
-mean(var.exp.cem)
 
 var.exp.cem = var.explained.Y(posterior, otu.closed.Ysamp)
 
