@@ -98,7 +98,7 @@ metadata_prep = metadata_london %>%
 var.explained.Y <- function(posterior, otu.closed){
   posterior = to_proportions(posterior)
   posterior = to_alr(posterior, ncategories(posterior))
-  Y.pred = predict(posterior, response = "LambdaX", from_scratch = TRUE)
+  Y.pred = predict(posterior, response = "LambdaX", from_scratch = FALSE)
   Eta.inv = array(0, dim = c(dim(otu.closed), 2000))
   for(i in 1:dim(Y.pred)[3]){
     Eta.inv[,,i] = alrInv_array(Y.pred[,,i], d = nrow(Y.pred) + 1, 1)
@@ -107,15 +107,15 @@ var.explained.Y <- function(posterior, otu.closed){
   size = as.data.frame(colSums(posterior$Y))
   for (i in 1:dim(Ypred)[3]){
     for (j in 1:dim(Ypred)[2]){
-      Ypred[,j,i] <- rmultinom(1, size=size[j,], prob=Eta.inv[,j,i])
+      Ypred[,j,i] <- Eta.inv[,j,i] * size[j,]
     }
   }
-  exp.mat = matrix(NA, nrow = dim(Ypred)[3], ncol = dim(Ypred)[1])
+  exp.mat = matrix(NA, nrow = dim(Ypred)[3], ncol = 1)
   for(i in 1:dim(Y.pred)[3]){
     Y.pred.closed = miniclo_array(Ypred[,,i], parts = 1)
-    var_fit = apply(Y.pred.closed, MARGIN = 1, FUN = "var")
-    var_res = apply(Y.pred.closed - otu.closed, MARGIN = 1, FUN = "var")
-    exp.mat[i,] = var_fit/ (var_fit + var_res)
+    var_fit = sum(apply(Y.pred.closed, MARGIN = 1, FUN = "var"))
+    var_res = sum(apply(Y.pred.closed - otu.closed, MARGIN = 1, FUN = "var"))
+    exp.mat[i,1] = var_fit/ (var_fit + var_res)
     
   }
   return(exp.mat)
@@ -247,6 +247,7 @@ var.exp = var.explained.Y(posterior, otu.closed)
 
 print("Percent of Variation Explained by Date_100 Model (Counts):")
 mean(var.exp)
+quantile(var.exp, c(0.025,0.975))
 
 #####Part 4: Percent of Variability Explained by Other Sources#####
 
@@ -270,7 +271,7 @@ X = t(model.matrix(~1, data = metadata_prep))
 Theta = matrix(0, ntaxa(Y.samp)-1, nrow(X))
 Gamma = diag(nrow(X))*gamm.select
 
-posterior <- pibble(Y.samp, X, upsilon, Theta, Gamma, Xi)
+posterior <- pibble(Y.samp, X, upsilon, Theta, Gamma, Xi, multDirichletBoot = 1)
 posterior = to_clr(posterior)
 
 
@@ -280,6 +281,7 @@ var.exp.int = var.explained.Y(posterior, otu.closed.Ysamp)
 print("Percent of Variation in Time Explained by Intercept-Only Model (Counts):")
 
 mean(var.exp.int)
+quantile(rowMeans(var.exp.int), c(0.025,0.975))
 
 ##Another sanity check, should be close to 100%
 X = t(model.matrix(~BlackDeath_PrePost - 1, data = metadata_prep))
@@ -287,15 +289,15 @@ X = t(model.matrix(~BlackDeath_PrePost - 1, data = metadata_prep))
 Theta = matrix(0, ntaxa(Y.samp)-1, nrow(X))
 Gamma = diag(nrow(X))*gamm.select
 
-posterior <- pibble(Y.samp, X, upsilon, Theta, Gamma, Xi)
+posterior <- pibble(Y.samp, X, upsilon, Theta, Gamma, Xi, multDirichletBoot = 1)
 posterior = to_clr(posterior)
-
 
 var.exp.date = var.explained.Y(posterior, otu.closed.Ysamp)
 ###Percentage of variance explained
 
 print("Percent of Variation in Time Explained by Date_100 Model (Counts):")
 mean(var.exp.date)
+quantile((var.exp.date), c(0.025,0.975))
 
 X = t(model.matrix(~Cemetry - 1, data = metadata_prep))
 
@@ -311,4 +313,5 @@ var.exp.cem = var.explained.Y(posterior, otu.closed.Ysamp)
 
 print("Percent of Variation in Time Explained by Cemetry Model (Counts):")
 mean(var.exp.cem)
+quantile((var.exp.cem), c(0.025,0.975))
 
