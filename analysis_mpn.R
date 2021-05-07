@@ -107,7 +107,7 @@ var.explained.Y <- function(posterior, otu.closed){
   size = as.data.frame(colSums(posterior$Y))
   for (i in 1:dim(Ypred)[3]){
     for (j in 1:dim(Ypred)[2]){
-      Ypred[,j,i] <- Eta.inv[,j,i] * size[j,]
+      Ypred[,j,i] <- rmultinom(1, size[j,] ,Eta.inv[,j,i])## Eta.inv[,j,i] * size[j,]
     }
   }
   exp.mat = matrix(NA, nrow = dim(Ypred)[3], ncol = 1)
