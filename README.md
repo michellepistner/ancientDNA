@@ -25,4 +25,5 @@ with priors
 where $\eta_j = ALR(\pi_j)$ (\textit{e.g.}, $\eta_j$ denotes the additive log-ratio coordinates of the proportions which exist on the simplex) and $MN_{(D-1) \times P}$ represents the Matrix-Normal distribution of correct dimension. These methods are efficiently implemented in the *fido* R package (Silverman, 2019) of which we used  version 0.1.13 for our analyses.
 
 **References**
+
 Silverman, J. D., Roche, K., Holmes, Z. C., David, L. A., & Mukherjee, S. (2019). Bayesian multinomial logistic normal models through marginally latent matrix-T processes. *arXiv preprint arXiv:1903.11695*.
