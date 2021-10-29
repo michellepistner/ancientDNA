@@ -16,7 +16,7 @@ set.seed(2021)
 #####Part 1: Reading, Filtering, and Processing Metadata/OTU data#####
 
 ###Reading in the metadata
-metadata = read.delim(file.path("Data", "BritishData", "All_Metadata_2282021.txt"))
+metadata = read.delim(file.path("data", "All_Metadata_2282021.txt"))
 
 ##Filtering metadata to Museum of London only with a value for Date_100
 metadata_london = metadata %>%
@@ -26,7 +26,7 @@ metadata_london = metadata %>%
 dim(metadata_london)
 
 ###Reading in the OTU data
-OTU_data = read.delim(file.path("Data", "BritishData", "AllSamples_20210212_RawAbsolute_AllTaxa.txt"))
+OTU_data = read.delim(file.path("data", "AllSamples_20210212_RawAbsolute_AllTaxa.txt"))
 dim(OTU_data)
 
 ##Light cleaning of the names so the taxanomic information is of the same type for every taxa
