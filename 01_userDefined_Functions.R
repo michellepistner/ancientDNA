@@ -27,3 +27,4 @@ var.explained.Y <- function(posterior, otu.closed){
   }
   return(exp.mat)
 }#end of function
+

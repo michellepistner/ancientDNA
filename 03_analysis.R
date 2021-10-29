@@ -36,7 +36,7 @@ print("Percent of Variation Explained by Intercept-Only Model (Counts):")
 mean(var.exp.Y)
 
 ###Date model
-X = t(model.matrix(~BlackDeath_PrePost - 1, data = metadata_prep))
+X = t(model.matrix(~BlackDeath_1346_1353 - 1, data = metadata_prep))
 
 ###Setting priors based on X
 Theta = matrix(0, ntaxa(Y)-1, nrow(X))
@@ -85,7 +85,7 @@ avg.var = rep(NA, length(gamm.opt))
 
 for(i in 1:length(gamm.opt)){
   ###Date model
-  X = t(model.matrix(~BlackDeath_PrePost - 1, data = metadata_prep))
+  X = t(model.matrix(~BlackDeath_1346_1353 - 1, data = metadata_prep))
   
   ###Setting priors based on X
   Theta = matrix(0, ntaxa(Y)-1, nrow(X))
@@ -105,7 +105,7 @@ gamm.select = which.max(avg.var)
 
 ####Fitting optimal model
 ###Date_100 model
-X = t(model.matrix(~BlackDeath_PrePost - 1, data = metadata_prep))
+X = t(model.matrix(~BlackDeath_1346_1353 - 1, data = metadata_prep))
 
 ###Setting priors based on X
 Theta = matrix(0, ntaxa(Y)-1, nrow(X))
@@ -163,7 +163,7 @@ mean(var.exp.int)
 quantile(rowMeans(var.exp.int), c(0.025,0.975))
 
 ##Another sanity check, should be close to 100%
-X = t(model.matrix(~BlackDeath_PrePost - 1, data = metadata_prep))
+X = t(model.matrix(~BlackDeath_1346_1353 - 1, data = metadata_prep))
 
 Theta = matrix(0, ntaxa(Y.samp)-1, nrow(X))
 Gamma = diag(nrow(X))*gamm.select
@@ -193,4 +193,21 @@ var.exp.cem = var.explained.Y(posterior, otu.closed.Ysamp)
 print("Percent of Variation in Time Explained by Cemetry Model (Counts):")
 mean(var.exp.cem)
 quantile((var.exp.cem), c(0.025,0.975))
+
+
+X = t(model.matrix(~Tooth - 1, data = metadata_prep))
+
+Theta = matrix(0, ntaxa(Y.samp)-1, nrow(X))
+Gamma = diag(nrow(X))*gamm.select
+
+posterior <- pibble(Y.samp, X, upsilon, Theta, Gamma, Xi, multDirichletBoot = 1)
+posterior = to_clr(posterior)
+
+var.exp.tooth = var.explained.Y(posterior, otu.closed.Ysamp)
+
+###Percentage of variance explained
+
+print("Percent of Variation in Time Explained by Tooth Model (Counts):")
+mean(var.exp.tooth)
+quantile((var.exp.tooth), c(0.025,0.975))
 

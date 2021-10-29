@@ -16,12 +16,12 @@ set.seed(2021)
 #####Part 1: Reading, Filtering, and Processing Metadata/OTU data#####
 
 ###Reading in the metadata
-metadata = read.csv(file.path("Data", "BritishData", "FullMetadata_20210428.csv"))
+metadata = read.delim(file.path("Data", "BritishData", "All_Metadata_2282021.txt"))
 
 ##Filtering metadata to Museum of London only with a value for Date_100
 metadata_london = metadata %>%
   filter(str_detect(Museum,"MoL")) %>%
-  filter(!is.na(BlackDeath_PrePost)) 
+  filter(!is.na(BlackDeath_1346_1353)) 
 
 dim(metadata_london)
 
@@ -74,7 +74,8 @@ OTU.london %>% rowSums() %>% ecdf() %>% base::plot() %>% abline(v=1e6)
 ###Filter out all taxa that don't have a count of at least one in 30% of samples
 filtered = rowSums(OTU.london > 1) < .25*ncol(OTU.london)
 other.tot = colSums(OTU.london[filtered,])
-otu.filtered = rbind(OTU.london[!filtered,], "Other" = other.tot)
+filtered[122] = TRUE
+otu.filtered = rbind(OTU.london[!filtered,], "Other" = other.tot + OTU.london[122,])
 dim(otu.filtered)
 
 ###Reordering metadata_london to match the OTU table
@@ -86,5 +87,5 @@ metadata_london$LateDate = ifelse(is.na(metadata_london$LateDate), stri_list2mat
 
 ##Creating the final metadata with the needed variables
 metadata_prep = metadata_london %>%
-  select(Date_100, Date_200, Date_300, BlackDeath_PrePost, EarlyDate, LateDate, MedievalPostMedieval, Cemetry, MaxillaMandible, BuccalLingual, SubSupragingival)
+  select(Date_100, Date_200, Date_300, BlackDeath_PrePost, EarlyDate, LateDate, MedievalPostMedieval, Cemetry, MaxillaMandible, BuccalLingual, SubSupragingival, Tooth, Tooth_Simplified, BlackDeath_1346_1353)
 
