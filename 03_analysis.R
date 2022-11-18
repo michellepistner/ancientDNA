@@ -196,9 +196,9 @@ quantile((var.exp.cem), c(0.025,0.975))
 
 ########Part 5: Map Damage Model
 metadata_NA <- metadata_prep %>%
-  select(X.SampleID, DeltaD_mean) %>%
+  select(X.SampleID, DeltaD_mean, DeltaD_mean_methano, DeltaD_mean_por, DeltaD_mean_strep, BlackDeath_PrePost, Cemetry) %>%
   na.omit()
-X = t(model.matrix(~DeltaD_mean, data = metadata_prep))
+X = t(model.matrix(~DeltaD_mean + DeltaD_mean_methano + DeltaD_mean_por + DeltaD_mean_strep, data = metadata_NA))
 otu.filtered.na <- otu.filtered[,(colnames(otu.filtered) %in% paste0("X",metadata_NA$X.SampleID))]
 Y.na = otu_table(otu.filtered.na, taxa_are_rows=TRUE)
 
@@ -223,3 +223,58 @@ var.exp.GC = var.explained.eta(posterior)
 print("Percent of Variation Explained by Map Damage Model (Counts):")
 mean(var.exp.GC)
 100*quantile(var.exp.GC, prob = c(0.025,.975))
+
+##Now, seeing how much of the variability explained by cemetery is also explained by Delta_Dmean
+
+####Fitting optimal model
+###Date_100 model
+X = t(model.matrix(~Cemetry - 1, data = metadata_NA))
+
+###Setting priors based on X
+Theta = matrix(0, ntaxa(Y.na)-1, nrow(X))
+Gamma = diag(nrow(X))*gamm.select
+
+posterior = pibble(Y.na, X, upsilon, Theta, Gamma, Xi, multDirichletBoot = 1)
+posterior = to_clr(posterior)
+
+var.exp = var.explained.eta(posterior)
+###Percentage of variance explained
+
+print("Percent of Variation Explained by the Cemetry Model (Counts):")
+mean(var.exp)
+quantile(var.exp, c(0.025,0.975))
+
+#####Part 5b: Percent of Variability in Cemetry Explained by Delta D#####
+
+###First, getting the part "explained by" Cemetry
+Y.pred = predict(posterior, response = "Y", from_scratch = TRUE)
+
+###Variation explained by other sources
+Y.samp = apply(Y.pred, MARGIN=c(1,2), FUN = "mean")
+
+otu.closed.Ysamp = miniclo_array(Y.samp, parts = 1)
+
+rownames(Y.samp) = rownames(Y)
+names(Y.samp) = names(Y)
+Y.samp = otu_table(Y.samp, taxa_are_rows=TRUE)
+
+
+##Testing DeltaD
+X = t(model.matrix(~DeltaD_mean + DeltaD_mean_methano + DeltaD_mean_por + DeltaD_mean_strep, data = metadata_NA))
+
+Theta = matrix(0, ntaxa(Y.samp)-1, nrow(X))
+Gamma = diag(nrow(X))*gamm.select
+
+posterior <- pibble(Y.samp, X, upsilon, Theta, Gamma, Xi, multDirichletBoot = 1)
+posterior = to_clr(posterior)
+
+
+var.exp.DD = var.explained.eta(posterior)
+###Percentage of variance explained
+
+print("Percent of Variation in Cemetry Explained by Delta-D Model (Counts):")
+
+mean(var.exp.DD)
+quantile(rowMeans(var.exp.DD), c(0.025,0.975))
+
+

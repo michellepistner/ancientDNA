@@ -91,7 +91,7 @@ metadata_prep = metadata_london %>%
 ##Merging in the mapDamage data
 metadata_MD = read.csv(file.path("Data", "BritishData", "metadata_mapDamage.csv")) %>%
   mutate(X.SampleID = Sample) %>%
-  select(X.SampleID, DeltaD_mean)
+  select(X.SampleID, DeltaD_mean, DeltaD_mean_methano, DeltaD_mean_por, DeltaD_mean_strep)
 
 metadata_prep = metadata_prep %>%
   join(metadata_MD, by = "X.SampleID")
