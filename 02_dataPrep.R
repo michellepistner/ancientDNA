@@ -16,7 +16,7 @@ set.seed(2021)
 #####Part 1: Reading, Filtering, and Processing Metadata/OTU data#####
 
 ###Reading in the metadata
-metadata = read.delim(file.path("data", "All_Metadata_2282021.txt"))
+metadata = read.delim(file.path("Data", "BritishData", "All_Metadata_2282021.txt"))
 
 ##Filtering metadata to Museum of London only with a value for Date_100
 metadata_london = metadata %>%
@@ -26,7 +26,7 @@ metadata_london = metadata %>%
 dim(metadata_london)
 
 ###Reading in the OTU data
-OTU_data = read.delim(file.path("data", "AllSamples_20210212_RawAbsolute_AllTaxa.txt"))
+OTU_data = read.delim(file.path("Data", "BritishData", "AllSamples_20210212_RawAbsolute_AllTaxa.txt"))
 dim(OTU_data)
 
 ##Light cleaning of the names so the taxanomic information is of the same type for every taxa
@@ -74,8 +74,7 @@ OTU.london %>% rowSums() %>% ecdf() %>% base::plot() %>% abline(v=1e6)
 ###Filter out all taxa that don't have a count of at least one in 30% of samples
 filtered = rowSums(OTU.london > 1) < .25*ncol(OTU.london)
 other.tot = colSums(OTU.london[filtered,])
-filtered[122] = TRUE
-otu.filtered = rbind(OTU.london[!filtered,], "Other" = other.tot + OTU.london[122,])
+otu.filtered = rbind(OTU.london[!filtered,], "Other" = other.tot)
 dim(otu.filtered)
 
 ###Reordering metadata_london to match the OTU table
@@ -87,5 +86,12 @@ metadata_london$LateDate = ifelse(is.na(metadata_london$LateDate), stri_list2mat
 
 ##Creating the final metadata with the needed variables
 metadata_prep = metadata_london %>%
-  select(Date_100, Date_200, Date_300, BlackDeath_PrePost, EarlyDate, LateDate, MedievalPostMedieval, Cemetry, MaxillaMandible, BuccalLingual, SubSupragingival, Tooth, Tooth_Simplified, BlackDeath_1346_1353)
+  select(X.SampleID, Date_100, Date_200, Date_300, BlackDeath_PrePost, EarlyDate, LateDate, MedievalPostMedieval, Cemetry, MaxillaMandible, BuccalLingual, SubSupragingival, Tooth, Tooth_Simplified, BlackDeath_1346_1353)
 
+##Merging in the mapDamage data
+metadata_MD = read.csv(file.path("Data", "BritishData", "metadata_mapDamage.csv")) %>%
+  mutate(X.SampleID = Sample) %>%
+  select(X.SampleID, DeltaD_mean)
+
+metadata_prep = metadata_prep %>%
+  join(metadata_MD, by = "X.SampleID")
