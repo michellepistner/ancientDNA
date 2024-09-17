@@ -1,0 +1,11 @@
+Cemetry,CemetryCode,Name,Address,Latitude,Longitude,SouthBank,distanceToThames,RomanWalls,GreatFire
+StMaryGraces,MIN86,StMarysGraces,"Royal Mint, East Smithfield, E1",51.50937,-0.07311,0,384,0,0
+StBenetSherehog,ONE94,StBenetSherehog,"1 Poultry, 1-19 Poultry, 2-38 Queen Victoria Street, 3-9, 35-40 Bucklersbury, Pancras Lane, Sise Lane, EC2, EC4",51.51356,-0.09063,0,537,1,1
+SpitalSquare,NRF88,SpitalSquare,"4-12 Norton Folgate, E",51.52148,-0.07889,0,1570,0,0
+MertonPriory,MPY86,MertonPriory,"MertonPriory, Station Road, SW19",51.41477,-0.18384,1,5450,0,0
+GuildhallYard,GYE92,GuildhallYard,"Portland House, 72-73 Basinghall Street, EC2",51.51645,-0.0911,0,806,1,1
+CrossBones,REW92,CrossBones,"Redcross Way, SE1",51.50436,-0.0938,1,330,0,0
+ChelseaOldChurch,OCU00,ChelseaOldChurch,"Chelsea Old Church, 2-4 Old Church Street, Chelsea SW3",51.48395,-0.17119,0,210,0,0
+BermondseyAbbey,BA84,BermondseyAbbey,"Saint Saviour Monastic Cemetery, Bermondsey Abbey, Abbey Street, Long Walk, Southwark SE1",51.49851,-0.07931,1,674,0,0
+SpitalSquare,SSQ88,SpitalSquare,"38 Spital Square, E1",51.52095,-0.07841,0,1440,0,0
+SpitalSquare,SPQ88,SpitalSquare,"4 Spital Square, E1",51.52106,-0.07801,0,1440,0,0
